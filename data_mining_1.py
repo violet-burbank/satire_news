@@ -6,11 +6,18 @@ os.chdir(os.path.join(os.getcwd(), "..", "..", ".."))
 os.chdir(os.path.join(os.getcwd(), "data", "FakeNewsCorpus"))
 print("trying now")
 data = pd.read_csv("news_cleaned_2018_02_13.csv")
+
+# data = pd.read_csv("news_sample.csv")
 print(data.head())
 
+print("pruning")
 pruned_df = data[['id', 'domain', 'type', 'url', 'title']]
 
 print(pruned_df.head())
+print("saving")
+
+os.chdir(os.path.join(os.getcwd(), "..", ".."))
+os.chdir(os.path.join(os.getcwd(), "home", "vburbank", "satire_news"))
 
 pruned_df.to_csv('pruned_news.csv')
 
