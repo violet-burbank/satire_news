@@ -1,7 +1,7 @@
 import os
 import pandas as pd
-from wordcloud import WordCloud, STOPWORDS
-import matplotlib.pyplot as plt
+# from wordcloud import WordCloud, STOPWORDS
+# import matplotlib.pyplot as plt
 csv_file_path = '/data/FakeNewsCorpus'
 os.chdir(os.path.join(os.getcwd(), "..", "..", ".."))
 os.chdir(os.path.join(os.getcwd(), "data", "FakeNewsCorpus"))
