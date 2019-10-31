@@ -13,6 +13,9 @@ print(data.head())
 print("pruning")
 pruned_df = data[['id', 'domain', 'type', 'url', 'title']]
 
+pruned_df = pruned_df[pruned_df.'type' != 'unreliable']
+pruned_df = pruned_df[pruned_df.'type' != 'bias']
+
 print(pruned_df.head())
 print("saving")
 
