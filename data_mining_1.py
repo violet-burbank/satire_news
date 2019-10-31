@@ -8,7 +8,7 @@ print("trying now")
 data = pd.read_csv("news_cleaned_2018_02_13.csv")
 print(data.head())
 
-pruned_df = data['id', 'domain', 'type', 'url', 'title']
+pruned_df = data[['id', 'domain', 'type', 'url', 'title']]
 
 print(pruned_df.head())
 
