@@ -25,7 +25,6 @@ os.chdir(os.path.join(os.getcwd(), "home", "vburbank", "satire_news"))
 pruned_df.to_csv('pruned_news.csv')
 
 print("done")
-
 # data = pd.read_csv("pruned_news.csv")
 
 # text = data[['domain']]
