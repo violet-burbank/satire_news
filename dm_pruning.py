@@ -8,6 +8,4 @@ print("pruning")
 pruned_df = data[data.type != 'unreliable']
 pruned_df = pruned_df[pruned_df.type != 'bias']  
 
-domain_names = pruned_df[['domain']]
-
 domain_names.to_csv('dom_names.csv')
