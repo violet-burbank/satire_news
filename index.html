@@ -1,0 +1,73 @@
+<!doctype html>
+<meta charset="utf-8">
+<script src="template.js"></script>
+<script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['\\(','\\)']]}
+});
+</script>
+
+<script type="text/front-matter">
+  title: "Article Title"
+  description: "Description of the post"
+  authors:
+  - Violet Burbank
+  affiliations:
+  - Computer Science and Mathematics, Harvey Mudd College
+</script>
+
+<dt-article>
+<h1>Detecting Satire in News Headlines</h1>
+<h2>Using logistic regression to classify news headlines from various sources as satire or reliable.</h2>
+<dt-byline></dt-byline>
+<p>While humans are fairly adept at recognizing sarcasm from seriousness, the prevalence of fake news and outlandish headlines have been making it much harder to determine what is real in the media. In this article we will attempt to create a logistic regression classifier to differentiate between real and satire news headlines. We can then use this classifier to see whether other types of unreliable or fake news have headlines similar to credible news or satire.</p>
+<p>I decided to use the open source dataset Fake News Corpus <dt-fn>github repo available <a href = "https://github.com/several27/FakeNewsCorpus">here</a> </dt-fn> to provide the satire and credible news headlines. The dataset itself consists of over 5 million articles classified<dt-fn>The original source used <a href = "https://github.com/several27/FakeNewsCorpus">http://www.opensources.co/</a> to classify each domain, but this site has since closed down.</dt-fn> into different types such as credible, satire, fake news, and so on. It is important to note that the data is classified into each type based off the domain of the article rather than the article itself. In order to make this data easier to work with, I cleaned the raw  csv to eliminate unnecessary columns, eliminate non-ascii characters, and eliminated rows with types that did not fall into the categories outlined by the original corpus. </p>
+<p>To get a better idea of where our news is coming from, let's explore the domains under the credible and the satire types. In the original dataset, the domain names were expressed as the news site they were scraped from, and thus included url extensions. To standardize the domain names, I eliminated punctuation and stop words<dt-fn>The complete list of stopwords used: ["com", "www", "org", "co", "uk", "aus", "domain", "columns", "rows", "au", "af", "ca", "go", "de", "in", "nz", "m", "net"]</dt-fn>. After doing this, we can create a word cloud to reflect the domains classified as reliable news and satire news and their relative frequencies<dt-fn>The distribution of these sites is very skewed, with the most common sites appearing exponentially more often than the others. To get a wrod cloud with more variety I took the log of the frequency of each domain.</dt-fn>.</p>
+<img src="images/credible_news_domains.png"
+     alt = "A word cloud demonstrating the frequencies of credible news domains in our dataset"
+     align = "left"
+     width="500"
+     height="375"
+     title = "Reliable news domains in the Fake News Corpus dataset"><img src="images/satire_news_domains.png"
+     alt = "A word cloud demonstrating the frequencies of satire news domains in our dataset"
+     align = "left"
+     width="500"
+     height="375"
+     title = "Satire news domains in the Fake News Corpus dataset">
+<p>So, let's create a classifier to determine whether an article is reliable or satirical. I used the SciKitLearn Count Vectorizer<dt-fn>documentation found <a href = "https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.CountVectorizer.html">here</a></dt-fn> to create a bag of words model for our data. I also split the data into test and training sets stratified by domain. By doing this, we retain the proportions of each domain represented in the test and training datasets. Finally, I constructed a logistic regression model<dt-fn>built with SciKit Learn, documentation found <a href = "https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html">here</a></dt-fn> To visualize the accuracy of the model I created a confusion matrix:</p>
+<img src="images/cm_total.png"
+ alt = "A confusion matrix demonstrating the accuracy of the model in classifying articles. Total accuracy is roughly .96"
+ align = "middle"
+ width="500"
+ height="500"
+ title = "Confusion matrix of running logistic regression on the entire dataset.">
+<p>Looking at this, we see a fairly high accuracy rate. while this is prommising, after looking a bit closer we see that the satire data has a very high false negative rate. This is becuase the satire data is being clobbered by the real news data. In fact, if we were to classify all headlines as credible news, we would see an accuracy of .95! This is not quite what we wanted, since we are trying to classify articles based off of their text content rather than pure probability. So, in order to better understand the problem let's examine a Receiver Operating Characteristic Curve (ROC Curve). This will tell us how distinguishable our problems are and the ease we can separate the two sets. We see the issue from our modelling reflected in this ROC curve: </p>
+<img src="images/roc_total.png"
+ alt = "A ROC Curve demonstrating the low true positive rate. The total area under the curve is .93."
+ align = "middle"
+ width="500"
+ height="500"
+ title = "ROC curve demonstrating the low true positive rate implicit in our data">
+<p>The area under the ROC curve is very large, which indicates that our model is not very accurate at all. I decided to try and pivot my focus from maximizing general accuracy to creating a model that will be more effective at classifying both satire and reliable news by having a lower false negative rate. So, I attemped to create a new reliable news dataset stratified from our total data by domain. So, I sampled the data to have a ratio of reliable to satire news of about 2:1. So, I created a new logistic regression model with this reduced amount of reliable news pieces. We get a confusion matrix as such: </p>
+<img src="images/cm_strat.png"
+ alt = "A confusion matrix demonstrating the accuracy of the model in classifying articles. Total accuracy is roughly .85"
+ align = "middle"
+ width="500"
+ height="500"
+ title = "Confusion matrix of running logistic regression on a stratified dataset.">
+</dt-article>
+<p>While this is significantly less accurate than the one above, we do see a better accuracy for the satire section.</p>
+
+<dt-appendix>
+</dt-appendix>
+
+<script type="text/bibliography">
+  @article{gregor2015draw,
+    title={DRAW: A recurrent neural network for image generation},
+    author={Gregor, Karol and Danihelka, Ivo and Graves, Alex and Rezende, Danilo Jimenez and Wierstra, Daan},
+    journal={arXivreprint arXiv:1502.04623},
+    year={2015},
+    url={https://arxiv.org/pdf/1502.04623.pdf}
+  }
+</script>
