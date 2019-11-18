@@ -13,7 +13,7 @@ credible_data = pd.read_csv("credible_data.csv")
 
 satire_data = pd.read_csv("satire_data.csv")
 
-credible_data_samp = credible_data.groupby('domain').apply(lambda x: x.sample(frac=0.10))
+credible_data_samp = credible_data.groupby('domain').apply(lambda x: x.sample(frac=0.06))
 
 
 total_data = pd.concat([credible_data_samp, satire_data])
