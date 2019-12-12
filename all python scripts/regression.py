@@ -1,5 +1,5 @@
 from sklearn.model_selection import train_test_split
-
+import sklearn
 from sklearn.linear_model import LogisticRegression
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn import metrics
@@ -23,10 +23,10 @@ total_data.title.replace({r'[^\x00-\x7F]+':''}, regex=True, inplace=True)
 total_data = total_data.dropna(how='any',axis=0) 
 
 #partition randomly by type
-# X_train, X_test, y_train, y_test = train_test_split(total_data.drop('type',axis=1), total_data['type'], test_size=0.30, random_state=101, stratify = total_data['type'])
+X_train, X_test, y_train, y_test = train_test_split(total_data.drop('type',axis=1), total_data['type'], test_size=0.30, random_state=101, stratify = total_data['type'])
 
 #partition randomly by domain
-X_train, X_test, y_train, y_test = train_test_split(total_data.drop('type',axis=1), total_data['type'], test_size=0.30, random_state=101, stratify = total_data['domain'])
+# X_train, X_test, y_train, y_test = train_test_split(total_data.drop('type',axis=1), total_data['type'], test_size=0.30, random_state=101)
 
 # vectorizer = CountVectorizer()
 vectorizer = TfidfVectorizer()
@@ -41,22 +41,26 @@ logisticRegr = LogisticRegression()
 logisticRegr.fit(X_train, y_train)
 
 
-# predictions = logisticRegr.predict(X_test)
-# score = logisticRegr.score(X_test, y_test)
+predictions = logisticRegr.predict(X_test)
+score = logisticRegr.score(X_test, y_test)
+print(score)
+round_score = round(score, 5)
 
-# print(score)
+cm = metrics.confusion_matrix(y_test, predictions, labels=['reliable', 'satire'], normalize = 'true')
+print(cm)
+# sklearn.metrics.plot_confusion_matrix(logisticRegr, X_test, y_test,
+#                                  display_labels=['satire', 'reliable'],
+#                                  normalize='all')
 
 
-# cm = metrics.confusion_matrix(y_test, predictions)
-# print(cm)
+cmap = sns.cubehelix_palette(50, hue=0.05, rot=0, light=0.9, dark=0, as_cmap=True)
+sns.heatmap(cm, annot=True, fmt=".3f", linewidths=.5, square = True, cmap=cmap, cbar=False, xticklabels=['reliable', 'satire'], yticklabels=['reliable', 'satire']);
+plt.ylabel('Actual label');
+plt.xlabel('Predicted label');
+all_sample_title = 'Accuracy Score: {0}'.format(round_score)
+plt.title(all_sample_title, size = 15)
 
-# plt.figure(figsize=(5,5))
-# sns.heatmap(cm, annot=True, fmt=".3f", linewidths=.5, square = True, cmap = 'Blues_r');
-# plt.ylabel('Actual label');
-# plt.xlabel('Predicted label');
-# all_sample_title = 'Accuracy Score: {0}'.format(score)
-# plt.title(all_sample_title, size = 15);
-# plt.show()
+plt.show()
 
 
 # pred_ytest = y_test.replace('reliable', 0)
