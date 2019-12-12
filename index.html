@@ -51,18 +51,18 @@ MathJax.Hub.Config({
     <section>
 <p>Most of these sources should be recognizable, and all have a significant web presence. We can see that the reliable news sites have a variety of specialties, from financial news to sports news to current events. Note that in the original dataset news classified as political or biased are in their own categories, meaning that all of the domains represented are more or less non partisan, and are not trying to serve a certain agenda. This will help us to create a model that will not be skewed towards certain political beliefs or persuasive techniques. The satire news domains are all strictly satire news, and could be on a variety of topics. We definitely have a lot of political headlines present, and most are not trying to promote an idealogy as much as poke fun. Now that we have a better idea of what data we are working with, we can begin training a model.</p>
 <h2>Creating and Adjusting a Model</h2>
-<p>So, let's create a classifier to determine whether an article is reliable or satirical. I used the SciKitLearn Count Vectorizer<dt-fn>documentation found <a href = "https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.CountVectorizer.html">here</a></dt-fn> to create a bag of words model for our data. I also split the data into test and training sets stratified by domain. By doing this, we retain the proportions of each domain represented in the test and training datasets. Finally, I constructed a logistic regression model<dt-fn>built with SciKit Learn, documentation found <a href = "https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html">here</a></dt-fn> To visualize the accuracy of the model I created a confusion matrix<dt-fn>further information and documentation found <a href = "https://scikit-learn.org/stable/modules/generated/sklearn.metrics.confusion_matrix.html">here</a></dt-fn> to demonstrate what each observation in the test set is being classified as.</p>
+<p>So, let's create a classifier to determine whether an article is reliable or satirical. I used the SciKitLearn Count Vectorizer<dt-fn>documentation found <a href = "https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.CountVectorizer.html">here</a></dt-fn> to create a bag of words model for our data. I also split the data into test and training sets stratified by type. By doing this, we retain the proportions of satire and reliable news represented in the test and training datasets. This will prevent us from having a training dataset entirely compromised of one type of news, skewing the model. Finally, I constructed a logistic regression model<dt-fn>built with SciKit Learn, documentation found <a href = "https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html">here</a></dt-fn> To visualize the accuracy of the model I created a confusion matrix<dt-fn>further information and documentation found <a href = "https://scikit-learn.org/stable/modules/generated/sklearn.metrics.confusion_matrix.html">here</a></dt-fn> to demonstrate what each observation in the test set is being classified as.</p>
 <feature>
     <img src="images/cm_total.png"
  alt = "A confusion matrix demonstrating the accuracy of the model in classifying articles. Total accuracy is roughly .96"
  align = "center"
- width="500"
- height="500"
+ width="750"
+ height="550"
  title = "Confusion matrix of running logistic regression on the entire dataset."
- hspace = "150">
-<p><figcaption>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Fig. 2 Confusion matrix of the entire dataset. 1 corresponds to satire news while 0 corresponds to real news.</figcaption></p>
+ hspace = "50">
+<p><figcaption>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Fig. 2 Confusion matrix of the entire dataset demonstrating high accuracy</figcaption></p>
 </feature>
-<p>This figure shows us how our model is performing in classifying reliable news (labelled as 0) and satire news (labelled as 1). Looking at this, we see a fairly high accuracy rate. while this is promising, looking a bit closer we see that the satire data has a very high false negative rate. There are about 21 thousand satire headlines being misclassified as reliable news, which is much higher than the true positive value of about 12 thousand. This is becuase the satire data is being clobbered by the real news data as there is significantly more reliable news data than satire. In fact, if we were to classify all headlines as credible news, we would see an accuracy of .95! This is not quite what we wanted, since we are trying to classify articles based off of their headline text content rather than pure probability. So, in order to better understand the problem let's examine a Receiver Operating Characteristic Curve (ROC Curve). The ROC Curve will show us the performance of this logistic regression model as our discrimination threshold is varied. It will compare the true positive rate with the false positive rate<dt-fn>More information and documentation found <a href = "https://scikit-learn.org/stable/modules/model_evaluation.html#roc-metrics">here</a></dt-fn>. Note that a model with perfect accuracy will have the area under the curve be exactly one.</p>
+<p>This figure shows us how our model is performing in classifying reliable news and satire news. Looking at this, we see a fairly high accuracy rate. while this is promising, looking a bit closer we see that the satire data has a very high false negative rate. Roughly 60% of our satire data is being misclassified. This is becuase the satire data is being clobbered by the real news data as there is significantly more reliable news data than satire. In fact, if we were to classify all headlines as credible news, we would see an accuracy of .95! This is not quite what we wanted, since we are trying to classify articles based off of their headline text content rather than pure probability. So, in order to better understand the problem let's examine a Receiver Operating Characteristic Curve (ROC Curve). The ROC Curve will show us the performance of this logistic regression model as our discrimination threshold is varied. It will compare the true positive rate with the false positive rate<dt-fn>More information and documentation found <a href = "https://scikit-learn.org/stable/modules/model_evaluation.html#roc-metrics">here</a></dt-fn>. Note that a model with perfect accuracy will have the area under the curve be exactly one.</p>
 <feature>
     <img src="images/roc_total.png"
  alt = "A ROC Curve demonstrating the low true positive rate. The total area under the curve is .93."
@@ -83,61 +83,32 @@ MathJax.Hub.Config({
  width="500"
  height="500"
  hspace="150">
-<p><figcaption>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Fig.4 Confusion matrix for a smaller real news population. 1 corresponds to satire, 0 corresponds to reliable news.</figcaption></p>
+<p><figcaption>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Fig.4 Confusion matrix for a smaller real news population.</figcaption></p>
 </feature>
 
 
-<p>While this is significantly less accurate than the one above, we do see a better false negative rate. There are now a little under 6 thousand satire articles being misclassified as reliable. However, we do see about 5 thousand reliable news headlines being classified as satire. This is acceptable, as we do see the majority of both reliable and satire news being classified correctly, which was not the case in our previous model with all of the data. </p>
+<p>While this model is significantly less accurate than the one above, we do see a better false negative rate. More than 80% of our satire articles are being classified correctly. However, we do see a larger false positive rate, with roughly 15% of reliable news headlines being classified as satire news. This is acceptable, as we do see the majority of both reliable and satire news being classified correctly, which was not the case in our previous model with all of the data. </p>
 <p>    
-Now, we will use this on some of the other types and see which ones get classified as satire versus real news. I decided to focus on conspiracy news, fake news, and clickbait news as these types tend to have the most outlandish headlines that attempt to pass as credible news yet in reality are not. I would like to see whether these different types of news are classified as being more similar to satire news headlines or credible news headlines by seeing how the headlines from my dataset get classified.</p>
+Now, we will use this model on some of the other types and see which ones get classified as satire versus real news. I decided to focus on conspiracy news, fake news, and clickbait news as these types tend to have the most outlandish headlines that attempt to pass as credible news yet in reality are not. I would like to see whether these different types of news are classified as being more similar to satire news headlines or credible news headlines by seeing how the headlines from my dataset get classified.</p>
         </section>
     
 <section>
 <h2>Trying the Model on Conspiracy, Fake, and Clickbait News</h2>
-<p>First, lets investigate conspiracy news. The conspiracy headlines tended to be the most outlandish, yet still are attempting to be interpretted as important and valid news stories. after running the values through the logistic regression model, we can see the breakdown of satire versus reliable news as follows: </p>
+<p>Our dataset has about 905,981 conspiracy articles, 928,083 fake news articles and 292,201 clickbait articles represented. After cleaning them and vectorizing them in the same way as the satire and reliable news, we can run them through the classified constructed above to see what label the data will get assigned. By seeing which classification they tend to be assigned, we can determine whether each type of misleading news is has headline style more similar to reliable or satire news.</p>
     <feature>
     <img 
-  src="images/conspiracy_news.png"
- title = "Conspiracy News Classifications"
- alt = "A pie chart demonstrating how about 77.9% of the conspiracy news headlines are classified as atire."
+  src="images/rel_sat_class.png"
+ title = "Classifications of Misleading News Types into Reliable and Satire News"
  align = "center"
  width="800"
  height="550"
  hspace="150">
     </feature>
 
-<p>As we can see, headliens tend to get classified as satire more often, with a proportion of 77.9% as compared to reliable news at 22.1%. While this is not that large of a difference, the majority of our articles are still getting classified as satire, indicating that they are more similar. This makes sense, as these articles are using words that are much more outlandish, and often reflect topics that the satire news sites are mocking. Because of this, we see a lot of similarities.</p>
+<p>As we can see, every classification of headline is predicted to be satire news more often than reliable news. While conspiracy news and clickbait news have a much higher rate of classification as satire news, fake news is more even. This is likely because the conspiracy and clickbait headlines are much more outlandish in their content, unlike the real news which reports on more than just sensationalist stories, but focusses on even mundane news. Fake news is often aimed to be more simliar to real news, as the entire point is usually to convince readers that the false information being communicated is true.</p>
     
-<p>Next, we take a look at fake news. For this category, the headlines tended to be more plausible than the conspiracy news, and while the events they discussed tended to not be real they were not as overtly fake. So, we see the classification breakdown is less skewed than for conspiracy news.</p>
     
-        <feature>
-    <img 
-  src="images/fake_news.png"
- title = "Fake News Classifications"
- alt = "A pie chart demonstrating how about 54.7% of the fake news headlines are classified as atire."
- align = "center"
- width="800"
- height="550"
- hspace="150">
-    </feature>
-
-    <p>While more articles are being classified as satire, the proportions are significantly more even. This likely reflects how fake news headlines are meant to mimic reliable news, and tend to focus on news that is shocking yet not outlandish. However, we still see not that less than half of the headlines are not classified as reliable. This is likely because deep down fake news is just that: fake. The events being discussed are sensationalized to some degree, and while some can slip under the radar into reliable classifications we do still see that there are also cases where the writing is more conducive to satire news.</p>
-    
-    <p>Finally, we can take a look at clickbait news. Clickbait news is often intentionally very outlandish and extreme, looking for simply views over depth of content. While headlines tend to not be overtly incorrect like fake news, they are definitely sensationalist. From this we see a similar breakdown to that of conspiracy news, displayed below.</p>
-        <feature>
-    <img 
-  src="images/clickbait.png"
- title = "Clickbait News Classifications"
- alt = "A pie chart demonstrating how about 77.4% of the clickbait news headlines are classified as atire."
- align = "center"
- width="800"
- height="550"
- hspace="150">
-    </feature>
-    
-    <p>The proportion of reliable classifications is much smaller than that of satire, and from this we see that the clickbait headlines are more similar to that of satire than real news. Once again this makes sense, as the clickbait articles tend to be exaggerated and are about more exciting topics than the regular news. They likely use similar style to that of satire as they look to have more excitement and interest than just the news itself.</p>
-</section>    
-    
+</section>
 <section>  
     <h2>Conclusion and Further Development</h2>
     <p>Overall, from this analysis we can say with some degree of certainty that conspiracy, fake, and clickbait news headlines tend to be more similar to satire news. While I cannot single out exactly what traits are most similar (eg word choice, punctiation...) we can see that the they are more similar to satire rather than reliable news. In a further examination on this topic I would like to look further into ways to tune the initial classifier to be more accurate, since it has a fairly high error rate. The results could be due to variability, or some other hidden factors I have not considered. I would also like to analyze different domains to see if some tend to have different styles that lend themselve more to satire or reliable.</p>
